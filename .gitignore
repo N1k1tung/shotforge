@@ -25,3 +25,5 @@ xcuserdata
 #Bundler
 /bin
 .bundle/
+
+DISTRIBUTION.md

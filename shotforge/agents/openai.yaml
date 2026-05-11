@@ -1,0 +1,4 @@
+interface:
+  display_name: "Shotforge"
+  short_description: "Create App Store screenshot decks"
+  default_prompt: "Use $shotforge to create an App Store screenshot deck from my app screenshots."
