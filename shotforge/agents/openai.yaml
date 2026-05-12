@@ -2,3 +2,11 @@ interface:
   display_name: "Shotforge"
   short_description: "Create App Store screenshot decks"
   default_prompt: "Use $shotforge to create an App Store screenshot deck from my app screenshots."
+
+dependencies:
+  tools:
+    - type: "mcp"
+      value: "shotforge"
+      description: "Shotforge local HTTP MCP server"
+      transport: "streamable_http"
+      url: "http://127.0.0.1:32100/mcp"

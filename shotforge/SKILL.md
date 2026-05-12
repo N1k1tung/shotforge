@@ -1,6 +1,6 @@
 ---
 name: shotforge
-description: Use when operating Shotforge through MCP to create, revise, or export App Store screenshots. Trigger for requests to generate screenshot decks, import screenshot assets, inspect Shotforge documents, or render/export finished marketing screenshots from the macOS app.
+description: Use when operating or setting up Shotforge through MCP to create, revise, or export App Store screenshots. Trigger for requests to install/configure the Shotforge skill or MCP server, generate screenshot decks, import screenshot assets, inspect Shotforge documents, or render/export finished marketing screenshots from the macOS app.
 ---
 
 # Shotforge MCP
@@ -20,11 +20,7 @@ Prefer Shotforge MCP when the user wants to:
 
 Do not default to hand-authoring a full `ShotProject` JSON payload unless the high-level design tool is insufficient.
 
-## Transport Options
-
-Shotforge currently supports both MCP transports:
-
-### Live GUI HTTP MCP
+## Transport
 
 Use this when the Shotforge app is open and the user wants to work against the currently active editor document.
 
@@ -32,23 +28,29 @@ Use this when the Shotforge app is open and the user wants to work against the c
 - Operates on the active Shotforge window/document
 - Best for iterative collaboration while the user has the app open
 
-### Headless stdio MCP
-
-Use this when the user wants a subprocess-style workflow or file-based automation.
-
-Launch pattern:
-
-```bash
-/path/to/Shotforge.app/Contents/MacOS/Shotforge --mcp-stdio --document /absolute/path/to/project.shotforge
-```
-
-Notes:
-- `--document` is optional; without it, Shotforge starts with a blank in-memory document.
-- In stdio mode, save changes with `shotforge_save_document`.
-
 ## File permissions
 
 Since Shotforge operates from sandbox, it can only access Downloads folder with convenient read/write access. It is highly advised to move working folder there, or copy assets there.
+
+## MCP Setup
+
+Before operating Shotforge, check whether the `shotforge_*` MCP tools are available in the current agent session.
+
+If the tools are missing, help the user configure the local Shotforge MCP server before continuing screenshot work. For live GUI MCP, ask the user to open Shotforge and enable `Settings > MCP`. Configure an MCP server named `shotforge` with HTTP or streamable HTTP transport at:
+
+```text
+http://127.0.0.1:32100/mcp
+```
+
+When running in Codex and the user wants automated setup, use:
+
+```bash
+codex mcp add shotforge --url http://127.0.0.1:32100/mcp
+```
+
+For other MCP clients, use the same server name and URL in that client's MCP settings. If the active agent has a reliable MCP setup command, use it; otherwise provide the server name and URL so the user can add it manually.
+
+After MCP configuration, re-check tool availability before calling Shotforge MCP tools. If the tools are still missing, stop and ask the user to reconnect or restart the agent session.
 
 ## Recommended Workflow
 
@@ -67,7 +69,6 @@ Follow this sequence unless the user is explicitly asking for a lower-level oper
 7. If any generated slide still looks dense or risky, shorten the copy or choose a different layout and regenerate before export.
 8. Call `shotforge_localize_selected_localization` when only one localization needs to be added or refreshed across the existing device rows.
 9. Call `shotforge_render_pages` to export PNGs.
-10. In stdio mode, call `shotforge_save_document` if the document should persist on disk.
 
 ## Floating Callouts
 
@@ -312,10 +313,6 @@ Exports one or more pages to PNG files.
 Arguments:
 - `outputDirectoryPath`: required absolute path
 - `pageIDs`: optional subset
-
-### `shotforge_save_document`
-
-Use in stdio mode when the document should be written to disk.
 
 ## Slide Brief Shape
 
